@@ -27,13 +27,18 @@ CHAMBERS = {
     "9": ("Pillar 4: Memory Hygiene, mlock() Traps & NVMe Memory Persistence", memory_hygiene.run_chamber),
 }
 
-def run_all():
-    print_banner()
+def run_all(delay_sec: float = 3.5, clear_screen: bool = True):
+    import time
     for key in sorted(CHAMBERS.keys(), key=int):
+        if clear_screen:
+            console.clear()
+            print_banner()
         title, func = CHAMBERS[key]
         console.rule(f"[bold cyan]{title}[/bold cyan]")
         func()
         console.print("\n")
+        if delay_sec > 0:
+            time.sleep(delay_sec)
 
 def interactive_menu():
     while True:
@@ -78,7 +83,7 @@ def interactive_menu():
 def main(run_all_flag, chamber_id):
     """Substrate Zero: The Full-Stack Cryptographic Substrate & Ephemeral Secret Failure Testbed."""
     if run_all_flag:
-        run_all()
+        run_all(delay_sec=0, clear_screen=False)
     elif chamber_id:
         if chamber_id in CHAMBERS:
             title, func = CHAMBERS[chamber_id]

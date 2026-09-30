@@ -34,7 +34,7 @@ Sleep 3s
 Type "A"
 Sleep 500ms
 Enter
-Sleep 10s
+Sleep 36s
 
 # Return to menu
 Enter
