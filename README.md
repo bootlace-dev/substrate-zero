@@ -9,18 +9,65 @@
   ╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝    ╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ 
 ```
 
-**Full-Stack Architectural Threat Model & Verification Testbed for Enterprise Ephemeral Secrets**  
+**Full-Stack Architectural Threat Model & Runtime Verification Testbed for Enterprise Ephemeral Secrets**  
 *Maintained by [@bootlace-dev](https://github.com/bootlace-dev)*
 
 ---
 
-## Executive Architectural Summary
+## Executive Infrastructure Audit Directive (TL;DR for Security Leadership)
 
-Enterprise security models—from TLS 1.3/mTLS session negotiation, SSH host authentication, WireGuard/IPsec VPN tunnels, zero-trust tokens, and Hardware Security Modules (HSMs), to high-value digital asset custody—depend fundamentally on the **ephemeral secret lifecycle**.
+For CISOs, VPs of Infrastructure Security, and Principal Security Engineers managing enterprise TLS/mTLS proxies, SSH jump hosts, WireGuard VPN tunnels, HSM daemons, and digital asset custody platforms:
 
-Catastrophic compromise rarely stems from mathematical breaks of underlying cryptographic primitives (such as computing discrete logarithms on prime-order elliptic curves). Instead, failure occurs at the **substrate layer**: the divergence between formal mathematical specifications and physical runtime execution across silicon, hypervisors, compilers, and operating system kernel boundaries.
+1. **Pillar 1 (Birth): MicroVM & TRNG Entropy Passthrough**
+   - Verify all QEMU/KVM hypervisor definitions enforce `virtio-rng` passthrough (`<rng model='virtio'><backend model='random'>/dev/urandom</backend></rng>`).
+   - Audit early-boot microVM services (SSH host key generators, mTLS bootstrappers) to guarantee they block on `getrandom()` rather than reading uninitialized `/dev/urandom` pools.
+   - Enforce continuous NIST SP 800-90B health monitoring on bare-metal hardware TRNGs.
 
-`substrate-zero` is a deterministic threat model and executable verification testbed that demonstrates how mathematically pristine cryptographic implementations collapse across the four phases of the ephemeral secret lifecycle: **Birth, Stretching, Consumption, and Death**.
+2. **Pillar 2 (Stretching): VM State Cloning & CSPRNG Reseeding**
+   - Mandate `CONFIG_VMGENID=y` in guest kernel builds and hypervisor definitions.
+   - Audit CSPRNG state drivers to verify ACPI unpause/restore events trigger immediate `getrandom()` re-seeding and ChaCha20-DRBG state invalidation.
+
+3. **Pillar 3 (Consumption): Nonce Hygiene & Kleptographic Proofing**
+   - Mandate hedged RFC 6979 deterministic nonces ($k = \text{HMAC}(x \parallel m \parallel \text{aux\_rand})$) across all signing binaries. Strictly forbid non-hedged random nonces.
+   - Run statistical analysis to verify zero bitwise bias across signature nonces.
+   - Enforce Sign-to-Contract (S2C) / Anti-Kleptography commitments on external signing hardware.
+
+4. **Pillar 4 (Death - Part I): Compiler Assembly & DSE Verification**
+   - Eliminate standard `memset()` for secret cleanup in C/C++ builds; enforce `explicit_bzero()`, C23 `memset_explicit()`, or volatile memory barrier fences (`asm volatile("" : : "r"(buf) : "memory")`).
+   - Inspect ELF disassembly (`objdump -d` on `-O3` builds) to verify optimizing compilers have not stripped buffer zeroing via Dead-Store Elimination.
+
+5. **Pillar 4 (Death - Part II): Kernel Memory Pinning & Swap Isolation**
+   - Require `LimitMEMLOCK=infinity` and `LimitCORE=0` in systemd service units with explicit `mlock()` `errno` validation.
+   - Enforce `madvise(MADV_DONTDUMP)` on secret allocations and execute high-value custody daemons strictly within stateless, swapless RAM disk (`tmpfs`) environments.
+
+---
+
+## The Substrate Boundary Thesis
+
+Modern cybersecurity failures are rarely caused by flawed mathematical protocols or buggy software implementations:
+
+```text
+  ┌─────────────────────────┐
+  │   1. THE PROTOCOL       │  ✔ Mathematically sound (e.g. secp256k1, TLS 1.3, WireGuard)
+  └─────────────────────────┘
+               │
+               ▼
+  ┌─────────────────────────┐
+  │   2. THE IMPLEMENTATION │  ✔ Passes unit tests & static analysis (OpenSSL, Libsodium, C/Rust)
+  └─────────────────────────┘
+               │
+               ▼
+  ┌─────────────────────────┐
+  │   3. THE RUNTIME EXEC   │  ✘ FAILS AT THE PHYSICAL SUBSTRATE
+  └─────────────────────────┘    (Uninitialized microVM entropy, VM snapshot clones,
+                                  compiler DSE stripping, silent mlock failure, NVMe swap bleed)
+```
+
+1. **The Protocol is Sound**: Formal specifications (TLS 1.3, RFC 8446, WireGuard, secp256k1, Ed25519) are mathematically proven.
+2. **The Implementation is Compliant**: Software libraries (OpenSSL, Libsodium, custom C/Rust daemons) pass unit test suites and static analysis.
+3. **The Substrate Execution Fails**: In production enterprise deployments, dynamic environmental factors—microVM container scaling, thermal load on TRNGs, compiler AST optimization passes (`gcc -O3`), container `rlimits`, and NVMe flash wear-leveling—silently break execution invariants.
+
+Because these failure vectors depend on specific enterprise deployment topologies, **substrate security requires continuous runtime monitoring** rather than one-time compliance audits.
 
 ---
 
@@ -79,18 +126,6 @@ During active transport or signing operations, nonce bias compromises underlying
 Ephemeral secrets must be completely sanitized from process memory immediately after use.
 - **Compiler Optimization Traps (DSE)**: Compiles C code under `gcc -O3` and inspects generated assembly to demonstrate how compilers delete sanitization `memset()` calls, leaving private keys readable in uninitialized stack memory.
 - **Kernel Swap & Physical NVMe Persistence**: Demonstrates silent `mlock()` failure under standard container rlimits, causing unpinned secret pages to spill onto physical NVMe flash storage where hardware wear-leveling preserves data controllers across reboots.
-
----
-
-## Enterprise Defense Invariants
-
-For engineering organizations operating mission-critical infrastructure, TLS/mTLS gateways, PKI services, and digital asset signers:
-
-1. **Continuous Entropy Auditing**: Never assume hardware TRNG health. Implement continuous health tests (NIST SP 800-90B) and mix multiple independent physical and kernel entropy sources.
-2. **Hypervisor Reseeding**: Enforce Linux `VMGENID` drivers in all cloud microVM images to force immediate CSPRNG re-seeding upon VM snapshot restoration or unpause.
-3. **Hedged Ephemeral Nonces**: Utilize hedged deterministic nonces ($k = \text{HMAC}(x \parallel m \parallel \text{aux\_rand})$) to combine deterministic safety with external entropy.
-4. **Guaranteed Memory Sanitization**: Prohibit standard `memset()` for zeroing sensitive memory. Mandate `explicit_bzero()`, C23 `memset_explicit()`, or volatile memory barrier fences (`asm volatile("" : : "r"(buf) : "memory")`).
-5. **Kernel Memory Pinning & Core Invalidation**: Assert `mlock()` return codes, set `madvise(MADV_DONTDUMP)`, enforce `LimitCORE=0` in systemd units, and execute signing processes on stateless, amnesic RAM disk environments.
 
 ---
 
