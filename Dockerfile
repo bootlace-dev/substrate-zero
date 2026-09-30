@@ -32,6 +32,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY substrate_zero/ ./substrate_zero/
 COPY scripts/ ./scripts/
+COPY tests/ ./tests/
 COPY Makefile ./
 
 RUN pip install --no-cache-dir -e .
