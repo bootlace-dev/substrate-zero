@@ -16,15 +16,15 @@ from substrate_zero.chambers.pillar3_consumption import lattice_hnp_crack, dark_
 from substrate_zero.chambers.pillar4_death import dse_assassin, memory_hygiene
 
 CHAMBERS = {
-    "1": ("Pillar 1: Silicon TRNG Collapse & #ifdef Fallbacks", trng_collapse.run_chamber),
-    "2": ("Pillar 1: Early-Boot MicroVM & Cloud-Init Starvation", cloud_init_starvation.run_chamber),
-    "3": ("Pillar 2: Libbitcoin 'Milk Sad' (CVE-2023-39910) 32-bit Seed Cracker", milk_sad_cracker.run_chamber),
-    "4": ("Pillar 2: Virtual Machine Snapshot Rollback & PRNG Clones", vm_snapshot_clone.run_chamber),
-    "5": ("Pillar 3: Lattice Nonce Bias (Hidden Number Problem) LLL Heist", lattice_hnp_crack.run_chamber),
-    "6": ("Pillar 3: Dark Skippy Kleptographic Mempool Exfiltration", dark_skippy_mempool.run_chamber),
-    "7": ("Pillar 3: High-Throughput Entropy Starvation & Insecure Fallback", high_throughput_throttle.run_chamber),
-    "8": ("Pillar 4: The Compiler Assassin (Dead-Store Elimination / DSE)", dse_assassin.run_chamber),
-    "9": ("Pillar 4: Memory Hygiene, mlock() Traps & NVMe Flash Bleed", memory_hygiene.run_chamber),
+    "1": ("Pillar 1: Silicon TRNG Entropy Collapse & Fallback Macros", trng_collapse.run_chamber),
+    "2": ("Pillar 1: Early-Boot MicroVM & Cloud-Init Pool Starvation", cloud_init_starvation.run_chamber),
+    "3": ("Pillar 2: Reduced PRNG Entropy (CVE-2023-39910) Seed Analysis", milk_sad_cracker.run_chamber),
+    "4": ("Pillar 2: Virtual Machine Snapshot Rollback & PRNG State Clones", vm_snapshot_clone.run_chamber),
+    "5": ("Pillar 3: Lattice Nonce Bias & Hidden Number Problem Analysis", lattice_hnp_crack.run_chamber),
+    "6": ("Pillar 3: Kleptographic Channel & Mempool Exfiltration", dark_skippy_mempool.run_chamber),
+    "7": ("Pillar 3: High-Throughput Resource Depletion & Insecure Fallback", high_throughput_throttle.run_chamber),
+    "8": ("Pillar 4: Compiler Optimization Stripping (Dead-Store Elimination / DSE)", dse_assassin.run_chamber),
+    "9": ("Pillar 4: Memory Hygiene, mlock() Traps & NVMe Memory Persistence", memory_hygiene.run_chamber),
 }
 
 def run_all():

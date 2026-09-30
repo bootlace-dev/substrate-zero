@@ -18,7 +18,7 @@ console = Console()
 def run_chamber():
     print_header(
         4,
-        "The Compiler Assassin: Dead-Store Elimination (DSE)",
+        "Compiler Optimization Stripping: Dead-Store Elimination (DSE)",
         "Proving GCC/Clang -O3 silently deletes memset() zeroization from compiled assembly"
     )
 

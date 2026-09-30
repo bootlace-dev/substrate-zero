@@ -27,28 +27,18 @@ Type "python3 -m substrate_zero.cli"
 Sleep 300ms
 Enter
 
-# 1. View Interactive Main Menu & Architecture Pillars
+# 1. View Interactive Main Menu & Architecture Pillars (Keys 1-9, A, Q)
 Sleep 3s
 
-# 2. Execute Chamber 8: Memory Sanitization & DSE Traps
-Type "8"
+# 2. Execute Option A: Run All Chambers Sequentially (Full Suite Chambers 1-9)
+Type "A"
 Sleep 500ms
 Enter
-Sleep 6s
+Sleep 10s
 
 # Return to menu
 Enter
-Sleep 2s
-
-# 3. Execute Chamber 5: Lattice Nonce Bias (Hidden Number Problem)
-Type "5"
-Sleep 500ms
-Enter
-Sleep 5s
-
-# Return to menu
-Enter
-Sleep 2s
+Sleep 3s
 
 # Clean exit
 Type "q"

@@ -70,7 +70,7 @@ def lll_reduction(matrix, delta=0.75):
 def run_chamber():
     print_header(
         3,
-        "Lattice Nonce Bias (Hidden Number Problem) Heist",
+        "Lattice Nonce Bias & Hidden Number Problem Analysis",
         "Recovering a 256-bit private key from subtle 4-bit nonce bias via LLL reduction"
     )
 

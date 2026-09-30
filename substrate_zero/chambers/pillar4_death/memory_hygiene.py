@@ -15,7 +15,7 @@ console = Console()
 def run_chamber():
     print_header(
         4,
-        "Memory Hygiene, mlock() Traps & NVMe Flash Bleed",
+        "Memory Hygiene, mlock() Traps & NVMe Memory Persistence",
         "Demonstrating silent memory locking failures and swap persistence on enterprise hardware"
     )
 
