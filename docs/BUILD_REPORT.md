@@ -32,7 +32,16 @@ All 4 Pillars and 9 interactive chambers have been implemented, tested, and vali
 docker run --rm -it bootlace-dev/substrate-zero:latest
 ```
 
-### Headless CI Suite Execution:
+### Full Test Suite (20 Tests across All 4 Pillars):
+```bash
+make test
+# Or natively:
+python3 -m unittest discover tests -v
+# Inside Docker:
+docker run --rm --entrypoint python3 bootlace-dev/substrate-zero:latest -m unittest discover tests -v
+```
+
+### Headless CI Chamber Suite:
 ```bash
 python3 scripts/run_all_chambers.py
 ```
