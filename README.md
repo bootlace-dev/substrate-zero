@@ -14,6 +14,25 @@
 
 ---
 
+## About Substrate Zero
+
+`substrate-zero` is an open-source architectural threat model and runnable verification suite designed to audit the **ephemeral secret lifecycle** across enterprise software, kernel boundaries, and hardware substrates.
+
+While enterprise security relies on mathematically proven protocols (TLS 1.3/mTLS, WireGuard, SSH, secp256k1, Ed25519) and compliant implementations (OpenSSL, Libsodium), production failures occur when physical runtime execution diverges from formal specifications. `substrate-zero` simulates and audits real-world substrate failure vectors—including silicon TRNG entropy degradation, cloud microVM pool starvation, hypervisor VM snapshot state cloning, lattice nonce bias (Hidden Number Problem), compiler dead-store elimination (DSE), and kernel NVMe flash swap persistence—equipping security architects and CTOs with continuous defense invariants and automated test suites.
+
+---
+
+## Interactive Terminal Demonstration
+
+<div align="center">
+  <img src="assets/demo.gif" alt="Substrate Zero Interactive Terminal Demo" width="900">
+</div>
+
+> **Step-Through Video Controls**: To pause, play, or step frame-by-frame using spacebar controls, view the high-definition video directly:  
+> **[Watch High-Res MP4 Video (assets/demo.mp4)](assets/demo.mp4)**
+
+---
+
 ## Executive Infrastructure Audit Directive (TL;DR for Security Leadership)
 
 For CISOs, VPs of Infrastructure Security, and Principal Security Engineers managing enterprise TLS/mTLS proxies, SSH jump hosts, WireGuard VPN tunnels, HSM daemons, and digital asset custody platforms:
