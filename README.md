@@ -94,22 +94,26 @@ python3 scripts/run_all_chambers.py
 
 ### Pillar 1: Birth (Physical & Kernel Generation)
 True random generation requires physical entropy from chaotic quantum or thermodynamic phenomena (thermal noise, avalanche breakdown, ring oscillator jitter).
+
 - **Chamber 1 (Silicon TRNG Collapse):** Demonstrates how minor voltage droop or elevated temperature locks ring oscillators into harmonic loops, silently dropping entropy from 256 bits to a 64-bit periodic pattern without asserting a hardware error flag.
 - **Chamber 2 (Early-Boot MicroVM Starvation):** Demonstrates how cloud-init scripts invoking `ssh-keygen` or `openssl` at T+120ms inside microVMs without `virtio-rng` read from an uninitialized `/dev/urandom` pool, generating identical host keys across independent nodes.
 
 ### Pillar 2: Stretching (State Duplication & Seeding)
 A cryptographically secure pseudorandom number generator (CSPRNG) must expand a finite physical seed into an unpredictable stream.
+
 - **Chamber 3 (Libbitcoin Milk Sad - CVE-2023-39910):** Live demonstration of cracking a 256-bit Bitcoin cold-storage wallet in $<1$ second because `bx seed` seeded Mersenne Twister (`mt19937`) with seconds-since-epoch.
 - **Chamber 4 (VM Snapshot Rollback & PRNG Clones):** Demonstrates hypervisor snapshot rollbacks freezing the ChaCha20 state counter, causing cloned gateway instances to issue identical ECDSA nonces ($k_1 == k_2$) and exposing master private keys via schoolbook modular division.
 
 ### Pillar 3: Consumption (Protocol Nonce Hygiene & High-Throughput)
 Even if the seed is pristine, cryptographic protocols consume nonces at massive scale. Any mathematical leakage in the nonce destroys the private key.
+
 - **Chamber 5 (Lattice Nonce Bias / Hidden Number Problem):** Demonstrates how an attacker collecting public mempool signatures with a microscopic 4-bit nonce bias constructs a Kannan embedding matrix and runs Lenstra–Lenstra–Lovász (LLL) lattice reduction to extract the 256-bit private key in milliseconds.
 - **Chamber 6 (Dark Skippy Kleptography):** Demonstrates how malicious firmware embeds a 24-word master seed into the public $r, s$ values of two innocent-looking mempool transactions, exfiltrating the entire wallet across an air-gap without network access.
 - **Chamber 7 (High-Throughput Insecure Fallback):** Demonstrates an enterprise TLS/API gateway exhausting file descriptors (`EMFILE`) under 100k TPS and silently falling back to insecure `time()` nonces.
 
 ### Pillar 4: Death (Secret Destruction & Memory Hygiene)
 Cryptographic secrets must be sanitized immediately upon completion of the mathematical operation.
+
 - **Chamber 8 (The Compiler Assassin - Dead-Store Elimination):** Compiles live C signing code with `gcc -O3` and disassembles the machine code to prove that the compiler optimizer silently stripped `memset(scalar, 0, 32)`, leaving raw 256-bit private keys plaintext on the deallocated stack.
 - **Chamber 9 (Memory Hygiene, mlock Traps & NVMe Flash Bleed):** Demonstrates silent `mlock()` failures under default container `RLIMIT_MEMLOCK` limits, causing private keys to swap to NVMe NAND flash memory where hardware wear-leveling preserves the key on the drive controller for months.
 
