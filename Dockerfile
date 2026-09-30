@@ -19,6 +19,7 @@ WORKDIR /opt/substrate-zero
 # Install required system compilation and inspection toolchain
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
+    libc6-dev \
     binutils \
     make \
     gdb \

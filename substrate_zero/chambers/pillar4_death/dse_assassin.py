@@ -66,20 +66,24 @@ def run_chamber():
     for line in obj_flawed.splitlines():
         if "<sign_transaction_flawed>:" in line:
             capture = True
-        elif capture and ("<" in line or not line.strip()):
-            break
-        elif capture:
-            flawed_asm.append(line)
+            continue
+        if capture:
+            if line.endswith(">:") or "Disassembly of section" in line:
+                break
+            if line.strip():
+                flawed_asm.append(line.strip())
 
     patched_asm = []
     capture = False
     for line in obj_patched.splitlines():
         if "<sign_transaction_secure>:" in line:
             capture = True
-        elif capture and ("<" in line or not line.strip()):
-            break
-        elif capture:
-            patched_asm.append(line)
+            continue
+        if capture:
+            if line.endswith(">:") or "Disassembly of section" in line:
+                break
+            if line.strip():
+                patched_asm.append(line.strip())
 
     p1 = Panel(
         Text("\n".join(flawed_asm[:10]), style="red"),
