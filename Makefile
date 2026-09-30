@@ -1,4 +1,4 @@
-.PHONY: all install run run-all docker-build docker-run clean
+.PHONY: all install run run-all test docker-build docker-run clean
 
 all: run
 
@@ -10,6 +10,9 @@ run:
 
 run-all:
 	python3 -m substrate_zero.cli --all
+
+test:
+	python3 -m unittest discover tests -v
 
 docker-build:
 	docker build -t bootlace-dev/substrate-zero:latest .

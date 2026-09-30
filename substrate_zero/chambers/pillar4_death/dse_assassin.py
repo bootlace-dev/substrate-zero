@@ -6,6 +6,7 @@ Real-World Precedent: GCC/Clang -O3 silently stripping memset() leaving keys in 
 import subprocess
 import os
 import shutil
+import tempfile
 from rich.console import Console
 from rich.panel import Panel
 from rich.columns import Columns
@@ -30,36 +31,45 @@ def run_chamber():
     flawed_src = os.path.join(current_dir, "dse_signer.c")
     patched_src = os.path.join(current_dir, "dse_signer_patched.c")
 
-    flawed_bin = "/tmp/dse_flawed"
-    patched_bin = "/tmp/dse_patched"
+    with tempfile.TemporaryDirectory() as tmpdir:
+        flawed_bin = os.path.join(tmpdir, "dse_flawed")
+        patched_bin = os.path.join(tmpdir, "dse_patched")
 
-    # Step 1: Compile flawed code
-    console.print("[yellow]Compiling flawed signer with standard release optimization: 'gcc -O3' ...[/yellow]")
-    res1 = subprocess.run(
-        ["gcc", "-O3", "-fno-stack-protector", flawed_src, "-o", flawed_bin],
-        capture_output=True, text=True
-    )
-    if res1.returncode != 0:
-        console.print(f"[red]Compilation failed: {res1.stderr}[/red]")
-        return
+        # Step 1: Compile flawed code
+        console.print("[yellow]Compiling flawed signer with standard release optimization: 'gcc -O3' ...[/yellow]")
+        res1 = subprocess.run(
+            ["gcc", "-O3", "-fno-stack-protector", flawed_src, "-o", flawed_bin],
+            capture_output=True, text=True
+        )
+        if res1.returncode != 0:
+            console.print(f"[red]Compilation failed: {res1.stderr}[/red]")
+            raise RuntimeError(f"Failed to compile flawed signer: {res1.stderr}")
 
-    # Step 2: Compile patched code
-    console.print("[yellow]Compiling patched signer with memory barriers: 'gcc -O3' ...[/yellow]")
-    res2 = subprocess.run(
-        ["gcc", "-O3", "-fno-stack-protector", patched_src, "-o", patched_bin],
-        capture_output=True, text=True
-    )
+        # Step 2: Compile patched code
+        console.print("[yellow]Compiling patched signer with memory barriers: 'gcc -O3' ...[/yellow]")
+        res2 = subprocess.run(
+            ["gcc", "-O3", "-fno-stack-protector", patched_src, "-o", patched_bin],
+            capture_output=True, text=True
+        )
+        if res2.returncode != 0:
+            console.print(f"[red]Compilation failed: {res2.stderr}[/red]")
+            raise RuntimeError(f"Failed to compile patched signer: {res2.stderr}")
 
-    # Step 3: Disassemble both functions
-    obj_flawed = subprocess.run(
-        ["objdump", "-d", flawed_bin],
-        capture_output=True, text=True
-    ).stdout
+        # Step 3: Disassemble both functions
+        obj_flawed = subprocess.run(
+            ["objdump", "-d", flawed_bin],
+            capture_output=True, text=True
+        ).stdout
 
-    obj_patched = subprocess.run(
-        ["objdump", "-d", patched_bin],
-        capture_output=True, text=True
-    ).stdout
+        obj_patched = subprocess.run(
+            ["objdump", "-d", patched_bin],
+            capture_output=True, text=True
+        ).stdout
+
+        # Step 4: Live Execution & Stack Inspection
+        console.print("\n[bold white]Executing Flawed Binary and Probing Stack Frame After Function Return...[/bold white]")
+        run_res = subprocess.run([flawed_bin], capture_output=True, text=True)
+        console.print(f"  Execution Output: {run_res.stdout.strip()}")
 
     flawed_asm = []
     capture = False
@@ -97,11 +107,6 @@ def run_chamber():
     )
 
     console.print(Columns([p1, p2]))
-
-    # Step 4: Live Execution & Stack Inspection
-    console.print("\n[bold white]Executing Flawed Binary and Probing Stack Frame After Function Return...[/bold white]")
-    run_res = subprocess.run([flawed_bin], capture_output=True, text=True)
-    console.print(f"  Execution Output: {run_res.stdout.strip()}")
 
     print_breach(
         "Compiler Stripped Zeroization (Secret Persists in Stack)",
