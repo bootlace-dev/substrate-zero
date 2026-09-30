@@ -1,4 +1,4 @@
-.PHONY: all install run run-all test docker-build docker-run clean
+.PHONY: all install run run-all test demo docker-build docker-run clean
 
 all: run
 
@@ -13,6 +13,9 @@ run-all:
 
 test:
 	python3 -m unittest discover tests -v
+
+demo:
+	python3 scripts/record_demo.py
 
 docker-build:
 	docker build -t bootlace-dev/substrate-zero:latest .

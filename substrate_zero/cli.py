@@ -37,6 +37,7 @@ def run_all():
 
 def interactive_menu():
     while True:
+        console.clear()
         print_banner()
         table = Table(title="Interactive Substrate Zero Testbed Chambers", border_style="cyan")
         table.add_column("Key", style="bold yellow", width=5)
@@ -59,9 +60,11 @@ def interactive_menu():
             console.print("[dim]Exiting Substrate Zero. Substrate invariants preserved.[/dim]")
             sys.exit(0)
         elif choice == "A":
+            console.clear()
             run_all()
             Prompt.ask("\n[bold green]Press Enter to return to menu...[/bold green]")
         elif choice in CHAMBERS:
+            console.clear()
             title, func = CHAMBERS[choice]
             console.rule(f"[bold cyan]{title}[/bold cyan]")
             func()

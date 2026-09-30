@@ -15,6 +15,12 @@
 
 ---
 
+<div align="center">
+  <img src="assets/demo.gif" alt="Substrate Zero Interactive Terminal Demo" width="900">
+</div>
+
+---
+
 ## Executive Summary
 
 When securing billions of dollars in corporate cryptocurrency reserves or sovereign infrastructure, catastrophic security breaches rarely stem from mathematical breaks of the underlying curves (e.g. solving discrete logarithms on $secp256k1$). 

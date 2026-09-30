@@ -9,7 +9,7 @@ import shutil
 import tempfile
 from rich.console import Console
 from rich.panel import Panel
-from rich.columns import Columns
+from rich.table import Table
 from rich.text import Text
 from substrate_zero.ui import print_header, print_breach, print_defense
 
@@ -106,7 +106,11 @@ def run_chamber():
         border_style="green"
     )
 
-    console.print(Columns([p1, p2]))
+    grid = Table.grid(expand=True)
+    grid.add_column(ratio=1)
+    grid.add_column(ratio=1)
+    grid.add_row(p1, p2)
+    console.print(grid)
 
     print_breach(
         "Compiler Stripped Zeroization (Secret Persists in Stack)",
