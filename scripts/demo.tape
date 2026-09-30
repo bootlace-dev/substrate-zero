@@ -28,30 +28,30 @@ Sleep 300ms
 Enter
 
 # 1. View Interactive Main Menu & Architecture Pillars
-Sleep 1s
+Sleep 3s
 
-# 2. Execute Chamber 8: The Compiler Assassin (Dead-Store Elimination)
+# 2. Execute Chamber 8: Memory Sanitization & DSE Traps
 Type "8"
-Sleep 300ms
+Sleep 500ms
 Enter
-Sleep 1s
+Sleep 6s
 
 # Return to menu
 Enter
-Sleep 1s
+Sleep 2s
 
-# 3. Execute Chamber 5: Lattice Nonce Bias (Hidden Number Problem) LLL Heist
+# 3. Execute Chamber 5: Lattice Nonce Bias (Hidden Number Problem)
 Type "5"
-Sleep 300ms
+Sleep 500ms
 Enter
-Sleep 1s
+Sleep 5s
 
 # Return to menu
 Enter
-Sleep 1s
+Sleep 2s
 
 # Clean exit
 Type "q"
-Sleep 300ms
-Enter
 Sleep 500ms
+Enter
+Sleep 2s
